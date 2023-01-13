@@ -33,16 +33,39 @@ RSpec.describe 'The Hospital show page', type: :feature do
       expect(page).to have_content('Meredith Grey', count: 1)
       expect(page).not_to have_content('Kara Nadeau')
       expect(page).not_to have_content('Alex Karev')
-      
+
       visit hospital_path(hospital2)
-      
+
       expect(page).to have_content('Kara Nadeau', count: 1)
       expect(page).to have_content('Alex Karev', count: 1)
       expect(page).not_to have_content('Alex Pitzel', count: 1)
       expect(page).not_to have_content('Meredith Grey', count: 1)
     end
 
-    it 'shows the number of patients beside each doctor'
+    it 'shows the number of patients beside each doctor' do
+      patient6 = doctor3.patients.create!(name: 'Katie Bryce', age: 24)
+      patient7 = doctor4.patients.create!(name: 'Denny Duquette', age: 39)
+
+      visit hospital_path(hospital1)
+
+      within "#doctor-#{doctor1.id}" do
+        expect(page).to have_content(2)
+      end
+
+      within "#doctor-#{doctor3.id}" do
+        expect(page).to have_content(1)
+      end
+
+      visit hospital_path(hospital2)
+
+      within "#doctor-#{doctor2.id}" do
+        expect(page).to have_content(3)
+      end
+
+      within "#doctor-#{doctor4.id}" do
+        expect(page).to have_content(1)
+      end
+    end
 
     it 'shows the doctors in order or their patients'
   end
