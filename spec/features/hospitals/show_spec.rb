@@ -67,6 +67,17 @@ RSpec.describe 'The Hospital show page', type: :feature do
       end
     end
 
-    it 'shows the doctors in order or their patients'
+    it 'shows the doctors in order or their patients' do
+      patient6 = doctor3.patients.create!(name: 'Katie Bryce', age: 24)
+      patient7 = doctor4.patients.create!(name: 'Denny Duquette', age: 39)
+
+      visit hospital_path(hospital1)
+
+      expect('Alex Pitzel').to appear_before('Meredith Grey')
+
+      visit hospital_path(hospital2)
+
+      expect('Kara Nadea').to appear_before('Alex Karev')
+    end
   end
 end
