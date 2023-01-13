@@ -17,37 +17,97 @@ RSpec.describe 'The Doctor show page', type: :feature do
     it 'displays all of that doctors information' do
       visit doctor_path(doctor1)
 
-      expect(page).to have_content('Alex Pitzel')
-      expect(page).to have_content('Neuromedicine')
-      expect(page).to have_content('Laurentian University')
+      expect(page).to have_content('Alex Pitzel', count: 1)
+      expect(page).to have_content('Neuromedicine', count: 1)
+      expect(page).to have_content('Laurentian University', count: 1)
 
       visit doctor_path(doctor2)
 
-      expect(page).to have_content('Kara Nadeau')
-      expect(page).to have_content('Cardiac Rehab')
-      expect(page).to have_content('Nipissing University')
+      expect(page).to have_content('Kara Nadeau', count: 1)
+      expect(page).to have_content('Cardiac Rehab', count: 1)
+      expect(page).to have_content('Nipissing University', count: 1)
     end
 
     it 'displays the hospital this doctor works at' do
       visit doctor_path(doctor1)
 
-      expect(page).to have_content('St. Joseph Hospital')
+      expect(page).to have_content('St. Joseph Hospital', count: 1)
 
       visit doctor_path(doctor2)
 
-      expect(page).to have_content('Laurentian Hospital')
+      expect(page).to have_content('Laurentian Hospital', count: 1)
     end
+
     it 'lists the names of all the patients this doctor has' do
       visit doctor_path(doctor1)
 
-      expect(page).to have_content('Ryan Blackstock')
-      expect(page).to have_content('Adam Hickey')
+      expect(page).to have_content('Ryan Blackstock', count: 1)
+      expect(page).to have_content('Adam Hickey', count: 1)
 
       visit doctor_path(doctor2)
 
-      expect(page).to have_content('Lisa Kunto')
-      expect(page).to have_content('Terry Hamilton')
-      expect(page).to have_content('Joe Pitzel')
+      expect(page).to have_content('Lisa Kunto', count: 1)
+      expect(page).to have_content('Terry Hamilton', count: 1)
+      expect(page).to have_content('Joe Pitzel', count: 1)
+    end
+
+    it 'has a button next to each patient to remove a patient from the doctor' do
+      visit doctor_path(doctor1)
+
+      within "#patient-#{patient1.id}" do
+        expect(page).to have_button('Remove')
+      end
+
+      within "#patient-#{patient2.id}" do
+        expect(page).to have_button('Remove')
+      end
+
+      visit doctor_path(doctor2)
+
+      within "#patient-#{patient3.id}" do
+        expect(page).to have_button('Remove')
+      end
+
+      within "#patient-#{patient4.id}" do
+        expect(page).to have_button('Remove')
+      end
+
+      within "#patient-#{patient5.id}" do
+        expect(page).to have_button('Remove')
+      end
+    end
+
+    it 'removes a patient from this doctor when that button is clicked' do
+      # require 'pry'; binding.pry
+      DoctorPatient.create!(doctor_id: doctor1.id, patient_id: patient3.id)
+      DoctorPatient.create!(doctor_id: doctor2.id, patient_id: patient1.id)
+
+      visit doctor_path(doctor2)
+
+      expect(page).to have_content('Lisa Kunto', count: 1)
+      expect(page).to have_content('Ryan Blackstock', count: 1)
+
+      visit doctor_path(doctor1)
+
+      expect(page).to have_content('Lisa Kunto', count: 1)
+      expect(page).to have_content('Ryan Blackstock', count: 1)
+
+      within "#patient-#{patient3.id}" do
+        click_button 'Remove'
+      end
+
+      expect(current_path).to eq(doctor_path(doctor1))
+      expect(page).not_to have_content('Lisa Kunto')
+
+      visit doctor_path(doctor2)
+      expect(page).to have_content('Lisa Kunto', count: 1)
+
+      within "#patient-#{patient1.id}" do
+        click_button 'Remove'
+      end
+
+      expect(current_path).to eq(doctor_path(doctor2))
+      expect(page).not_to have_content('Ryan Blackstock')
     end
   end
 end
