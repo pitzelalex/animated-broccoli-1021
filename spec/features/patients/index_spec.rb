@@ -15,7 +15,7 @@ RSpec.describe 'The patient index page', type: :feature do
   describe 'as a visitor, when I visit the patient index page' do
     it 'displays the names of all adult patiens (age 18 or more) in alphabetical order' do
       visit patients_path
-      
+
       expect(page).to_not have_content('Ryan Blackstock')
       expect(page).to_not have_content('Terry Hamilton')
       expect('Adam Hickey').to appear_before('Joe Pitzel')
