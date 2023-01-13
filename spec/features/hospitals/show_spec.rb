@@ -6,6 +6,8 @@ RSpec.describe 'The Hospital show page', type: :feature do
   let!(:doctor1) { hospital1.doctors.create!(name: 'Alex Pitzel', specialty: 'Neuromedicine', university: 'Laurentian University') }
 
   let!(:doctor2) { hospital2.doctors.create!(name: 'Kara Nadeau', specialty: 'Cardiac Rehabilitation', university: 'Nipissing University') }
+  let!(:doctor3) { hospital1.doctors.create!(name: 'Meredith Grey', specialty: 'General Surgery', university: 'Harvard University') }
+  let!(:doctor4) { hospital2.doctors.create!(name: 'Alex Karev', specialty: 'Pediatric Surgery', university: 'Johns Hopkins University') }
 
   let!(:patient1) { doctor1.patients.create!(name: 'Ryan Blackstock', age: 30)}
   let!(:patient2) { doctor1.patients.create!(name: 'Adam Hickey', age: 30)}
@@ -24,7 +26,21 @@ RSpec.describe 'The Hospital show page', type: :feature do
       expect(page).to have_content('Laurentian Hospital')
     end
 
-    it 'shows the names of all doctors that work there'
+    it 'shows the names of all doctors that work there' do
+      visit hospital_path(hospital1)
+
+      expect(page).to have_content('Alex Pitzel', count: 1)
+      expect(page).to have_content('Meredith Grey', count: 1)
+      expect(page).not_to have_content('Kara Nadeau')
+      expect(page).not_to have_content('Alex Karev')
+      
+      visit hospital_path(hospital2)
+      
+      expect(page).to have_content('Kara Nadeau', count: 1)
+      expect(page).to have_content('Alex Karev', count: 1)
+      expect(page).not_to have_content('Alex Pitzel', count: 1)
+      expect(page).not_to have_content('Meredith Grey', count: 1)
+    end
 
     it 'shows the number of patients beside each doctor'
 
