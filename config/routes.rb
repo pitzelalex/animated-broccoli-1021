@@ -5,4 +5,5 @@ Rails.application.routes.draw do
     resources :patients, controller: 'doctors/patients'
   end
   resources :doctor_patients
+  resources :patients, only: [:index]
 end
